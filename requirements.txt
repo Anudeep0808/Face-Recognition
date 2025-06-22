@@ -1,0 +1,9 @@
+streamlit
+opencv-python
+faiss-cpu
+torch
+torchvision
+torchaudio
+ultralytics
+insightface
+onnxruntime
