@@ -1,3 +1,6 @@
+# Install dependencies before running:
+# pip install streamlit opencv-python faiss-cpu torch torchvision torchaudio ultralytics insightface onnxruntime
+
 import streamlit as st
 import cv2
 import os
@@ -11,10 +14,10 @@ from insightface.app import FaceAnalysis
 
 # ---------- CONFIGURATION ----------
 EMBEDDING_DIM = 512
-THRESHOLD = 0.3  
+THRESHOLD = 0.3  # Cosine similarity threshold
 
 app = FaceAnalysis(name='buffalo_l', root='/tmp')
-app.prepare(ctx_id=-1, det_size=(640, 640))  
+app.prepare(ctx_id=-1, det_size=(640, 640))  # Use CPU for inference
 
 def get_face_embedding(image, source=""):
     faces = app.get(image)
@@ -43,7 +46,7 @@ def load_dataset_embeddings(dataset_dir):
 
 def build_faiss_index(embeddings):
     faiss.normalize_L2(embeddings)
-    index = faiss.IndexFlatIP(EMBEDDING_DIM)  
+    index = faiss.IndexFlatIP(EMBEDDING_DIM)  # Cosine similarity
     index.add(embeddings)
     return index
 
@@ -95,29 +98,21 @@ else:
 option = st.radio("Choose Input Method", ("📷 Webcam", "📁 Upload Image"))
 
 if option == "📷 Webcam":
-    cap = cv2.VideoCapture(0)
-    stframe = st.empty()
+    st.info("📸 Use your webcam to capture a photo for recognition.")
+    picture = st.camera_input("Capture your face")
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            st.error("Failed to capture frame from webcam.")
-            break
+    if picture is not None:
+        img = Image.open(picture).convert("RGB")
+        img_np = np.array(img)
+        st.image(img_np, caption="Captured Image", use_column_width=True)
 
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        faces = app.get(rgb_frame)
+        faces = app.get(img_np)
         if faces:
             embedding = faces[0].embedding.astype('float32')
             name, dist = match_face(embedding, index, names)
-            bbox = faces[0].bbox.astype(int)
-            x1, y1, x2, y2 = bbox
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f"{name} ({dist:.2f})", (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-
-        stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB")
-
-    cap.release()
+            st.success(f"Recognized as: {name} (Similarity: {dist:.2f})")
+        else:
+            st.warning("No face detected in the captured photo.")
 
 elif option == "📁 Upload Image":
     uploaded_file = st.file_uploader("Upload a face image", type=["jpg", "jpeg", "png"], key="upload-image")
