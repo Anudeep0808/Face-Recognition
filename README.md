@@ -1,13 +1,18 @@
-# 🔍 Face Recognition System using InsightFace, FAISS & Streamlit
+# 🔍 Real-Time Face Recognition with InsightFace & FAISS
 
-This is a real-time face recognition app that uses **InsightFace** for face detection and embedding, **FAISS** for similarity search, and **Streamlit** for a user-friendly web interface. It supports both **webcam** and **image upload** input modes.
+This project is a web-based face recognition system built using **Streamlit**, **InsightFace**, and **FAISS**. It supports both real-time webcam photo capture and image upload, compares face embeddings, and returns the closest match from your custom uploaded dataset.
 
-## 🚀 Features
+## 🚀 Live Demo
 
-- ✅ Face embedding using `InsightFace` (`buffalo_l` model)
-- ✅ Similarity matching using **FAISS** with **cosine similarity**
-- ✅ Real-time webcam input or image upload
-- ✅ Easy-to-use interface built with Streamlit
-- ✅ Supports multiple identities via a folder-based dataset
+👉 Try the deployed app here:  
+[https://face-recognition-faiss.streamlit.app/](https://face-recognition-faiss.streamlit.app/)
+
+## 📁 Features
+
+- Upload a ZIP file containing labeled face images (`.jpg`, `.jpeg`, `.png`)
+- Capture photo from webcam or upload an image to recognize
+- Real-time recognition using pre-trained `buffalo_l` model from InsightFace
+- Embedding comparison using **Cosine Similarity** via FAISS
+- Built entirely in Python, deployable via Streamlit Cloud
 
 
