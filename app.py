@@ -118,7 +118,6 @@ if option == "📷 Webcam":
         stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB")
 
     cap.release()
-    cv2.destroyAllWindows()
 
 elif option == "📁 Upload Image":
     uploaded_file = st.file_uploader("Upload a face image", type=["jpg", "jpeg", "png"], key="upload-image")
