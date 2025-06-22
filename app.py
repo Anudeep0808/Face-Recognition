@@ -68,10 +68,21 @@ if uploaded_zip:
             f.write(uploaded_zip.read())
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
-        dataset_dir = temp_dir
+
+        candidate_dirs = [os.path.join(temp_dir, d) for d in os.listdir(temp_dir)]
+        dataset_dir = None
+        for d in candidate_dirs:
+            if os.path.isdir(d):
+                if any(f.lower().endswith(('.jpg', '.jpeg', '.png')) for f in os.listdir(d)):
+                    dataset_dir = d
+                    break
+
+        if not dataset_dir:
+            st.error("No images found in the uploaded ZIP. Please ensure it contains face images.")
+            st.stop()
 
         with st.spinner("Loading face embeddings from uploaded dataset..."):
-            embeddings, names = load_dataset_embeddings(temp_dir)
+            embeddings, names = load_dataset_embeddings(dataset_dir)
             if len(embeddings) == 0:
                 st.error("No valid face embeddings found in dataset.")
                 st.stop()
